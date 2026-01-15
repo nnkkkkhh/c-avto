@@ -1,0 +1,9 @@
+services:
+  db_auth:
+    container_name: owner
+    ports:
+      - "5438:5432"
+    environment:
+      POSTGRES_USER: owner
+      POSTGRES_PASSWORD: 123
+    image: postgres:18
