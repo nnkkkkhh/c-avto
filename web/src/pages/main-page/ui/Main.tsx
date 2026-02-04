@@ -1,7 +1,16 @@
-export default function Main() {
+import { useState } from "react"
+
+
+const Main = () => {
+
+    const [state, setState] = useState(false)
+    const onClick = () => {
+        setState(!state)
+    }
+
     return (
-        <div>
-            <h1>Main Page</h1>
-        </div>
+        <div onClick={onClick}>{state ? "ON" : "OFF"}</div>
     )
 }
+
+export default Main
