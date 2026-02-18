@@ -1,16 +1,23 @@
+import Children from "./Children"
 import { useState } from "react"
 
-
-const Main = () => {
-
+export default function App() {
+    const [count, setCount] = useState(0)
     const [state, setState] = useState(false)
-    const onClick = () => {
-        setState(!state)
+    const onChange = () => {
+        setState((state) => !state)
+    }
+    const onCount = () => {
+        setCount((count) => ++count)
+        console.log(count)
     }
 
     return (
-        <div onClick={onClick}>{state ? "ON" : "OFF"}</div>
+        <div className="main-wrapper">
+            <p>Main</p>
+            <button onClick={onChange}>click</button>
+            <button onClick={onCount}>count</button>
+            {state && <Children children={state} count={count} />}
+        </div>
     )
 }
-
-export default Main
