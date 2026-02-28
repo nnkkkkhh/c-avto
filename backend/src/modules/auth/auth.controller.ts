@@ -1,8 +1,13 @@
+import { Prisma } from "@prisma/client";
 import { Request, Response } from "express";
 import { AuthRequest } from "./auth.types";
 import { AuthService } from "./auth.service";
 
 const authService = new AuthService();
+
+function isDbUnavailableError(error: unknown): boolean {
+    return error instanceof Prisma.PrismaClientInitializationError;
+}
 
 export class AuthController {
     static async register(req: Request, res: Response) {
@@ -26,6 +31,11 @@ export class AuthController {
 
             res.status(201).json(result);
         } catch (error) {
+            if (isDbUnavailableError(error)) {
+                res.status(503).json({ message: "Database is unavailable. Please try again later." });
+                return;
+            }
+
             const message = error instanceof Error ? error.message : "Registration failed";
             res.status(400).json({ message });
         }
@@ -43,6 +53,11 @@ export class AuthController {
             const result = await authService.login(email, password);
             res.status(200).json(result);
         } catch (error) {
+            if (isDbUnavailableError(error)) {
+                res.status(503).json({ message: "Database is unavailable. Please try again later." });
+                return;
+            }
+
             const message = error instanceof Error ? error.message : "Login failed";
             res.status(401).json({ message });
         }
@@ -63,7 +78,12 @@ export class AuthController {
             }
 
             res.status(200).json({ user });
-        } catch {
+        } catch (error) {
+            if (isDbUnavailableError(error)) {
+                res.status(503).json({ message: "Database is unavailable. Please try again later." });
+                return;
+            }
+
             res.status(500).json({ message: "Failed to fetch user" });
         }
     }
